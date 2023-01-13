@@ -19,16 +19,16 @@ var (
 )
 
 type ProtoPacker struct {
-	ProtoHeader           string
-	protoHeaderByteLength int
-	buf                   []byte
-	receivers             []interface{}
+	ProtoHeader       string
+	protoHeaderLength int
+	buf               []byte
+	receivers         []interface{}
 }
 
 func NewProtoPacker() *ProtoPacker {
 	return &ProtoPacker{
-		ProtoHeader:           defaultProtoHeader,
-		protoHeaderByteLength: len(defaultProtoHeader),
+		ProtoHeader:       defaultProtoHeader,
+		protoHeaderLength: len(defaultProtoHeader),
 	}
 }
 
@@ -39,7 +39,7 @@ func (bp *ProtoPacker) SetProtoHeader(header string) error {
 		err = ErrProtoheaderNotAvailable
 	} else {
 		bp.ProtoHeader = strings.TrimSpace(header)
-		bp.protoHeaderByteLength = len(bp.ProtoHeader)
+		bp.protoHeaderLength = len(bp.ProtoHeader)
 	}
 	return err
 }
@@ -69,18 +69,18 @@ func (bp *ProtoPacker) Unpack(pack []byte) {
 
 	var i int
 	for i = 0; i < length; i = i + 1 {
-		if length < i+defaultProtoHeaderLength+defaultProtoDataLengthByte {
+		if length < i+bp.protoHeaderLength+defaultProtoDataLengthByte {
 			break
 		}
-		if string(pack[i:i+bp.protoHeaderByteLength]) == bp.ProtoHeader {
-			msgLen := bytesToInt(pack[i+bp.protoHeaderByteLength : i+bp.protoHeaderByteLength+defaultProtoDataLengthByte])
-			if length < i+bp.protoHeaderByteLength+defaultProtoDataLengthByte+msgLen {
+		if string(pack[i:i+bp.protoHeaderLength]) == bp.ProtoHeader {
+			msgLen := bytesToInt(pack[i+bp.protoHeaderLength : i+bp.protoHeaderLength+defaultProtoDataLengthByte])
+			if length < i+bp.protoHeaderLength+defaultProtoDataLengthByte+msgLen {
 				break
 			}
-			data := pack[i+bp.protoHeaderByteLength+defaultProtoDataLengthByte : i+bp.protoHeaderByteLength+defaultProtoDataLengthByte+msgLen]
+			data := pack[i+bp.protoHeaderLength+defaultProtoDataLengthByte : i+bp.protoHeaderLength+defaultProtoDataLengthByte+msgLen]
 			bp.riseResult(data)
 
-			i += bp.protoHeaderByteLength + defaultProtoDataLengthByte + msgLen - 1
+			i += bp.protoHeaderLength + defaultProtoDataLengthByte + msgLen - 1
 		}
 	}
 
