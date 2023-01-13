@@ -78,7 +78,7 @@ func (bp *ProtoPacker) Unpack(pack []byte) {
 				break
 			}
 			data := pack[i+defaultProtoHeaderLength+defaultProtoDataLengthByte : i+defaultProtoHeaderLength+defaultProtoDataLengthByte+msgLen]
-			bp.RiseResult(data)
+			bp.riseResult(data)
 
 			i += defaultProtoHeaderLength + defaultProtoDataLengthByte + msgLen - 1
 		}
@@ -91,7 +91,7 @@ func (bp *ProtoPacker) Unpack(pack []byte) {
 }
 
 // 觸發＆回傳合法的封包資料
-func (bp *ProtoPacker) RiseResult(result []byte) {
+func (bp *ProtoPacker) riseResult(result []byte) {
 	for _, rcv := range bp.receivers {
 		switch rcv.(type) {
 		case chan []byte:
