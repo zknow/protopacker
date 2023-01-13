@@ -18,22 +18,22 @@ var (
 	ErrUndefinedReceiver       = fmt.Errorf("Not Undefined Receiver,Use 'chan []byte' or 'func([]byte)'")
 )
 
-type BytesPacker struct {
+type ProtoPacker struct {
 	ProtoHeader           string
 	protoHeaderByteLength int
 	buf                   []byte
 	receivers             []interface{}
 }
 
-func NewBytesPacker() *BytesPacker {
-	return &BytesPacker{
+func NewProtoPacker() *ProtoPacker {
+	return &ProtoPacker{
 		ProtoHeader:           defaultProtoHeader,
 		protoHeaderByteLength: len(defaultProtoHeader),
 	}
 }
 
 // 設定自定義Protocol Header
-func (bp *BytesPacker) SetProtoHeader(header string) error {
+func (bp *ProtoPacker) SetProtoHeader(header string) error {
 	var err error
 	if len(strings.TrimSpace(header)) == 0 {
 		err = ErrProtoheaderNotAvailable
@@ -45,7 +45,7 @@ func (bp *BytesPacker) SetProtoHeader(header string) error {
 }
 
 // 註冊封包(bytes)接收者
-func (bp *BytesPacker) RegistBytesReceiver(receivers ...interface{}) error {
+func (bp *ProtoPacker) RegistBytesReceiver(receivers ...interface{}) error {
 	for _, rcv := range receivers {
 		switch rcv.(type) {
 		case chan []byte:
@@ -59,12 +59,12 @@ func (bp *BytesPacker) RegistBytesReceiver(receivers ...interface{}) error {
 }
 
 // 封包
-func (bp *BytesPacker) Pack(message []byte) []byte {
+func (bp *ProtoPacker) Pack(message []byte) []byte {
 	return append(append([]byte(bp.ProtoHeader), intToBytes(len(message))...), message...)
 }
 
 // 解包
-func (bp *BytesPacker) Unpack(pack []byte) {
+func (bp *ProtoPacker) Unpack(pack []byte) {
 	length := len(pack)
 
 	var i int
@@ -91,7 +91,7 @@ func (bp *BytesPacker) Unpack(pack []byte) {
 }
 
 // 觸發＆回傳合法的封包資料
-func (bp *BytesPacker) RiseResult(result []byte) {
+func (bp *ProtoPacker) RiseResult(result []byte) {
 	for _, rcv := range bp.receivers {
 		switch rcv.(type) {
 		case chan []byte:

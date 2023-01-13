@@ -7,7 +7,7 @@ import (
 
 func Test1(t *testing.T) {
 	mockData := []byte("Mock Data")
-	bp := NewBytesPacker()
+	bp := NewProtoPacker()
 	bp.RegistBytesReceiver(func(result []byte) {
 		if !bytes.Equal(result, mockData) {
 			t.Error("Data Not Matched!")
