@@ -8,6 +8,7 @@ import (
 func Test1(t *testing.T) {
 	mockData := []byte("Mock Data")
 	bp := NewProtoPacker()
+	bp.SetProtoHeader("Custom@Header")
 	bp.RegistBytesReceiver(func(result []byte) {
 		if !bytes.Equal(result, mockData) {
 			t.Error("Data Not Matched!")

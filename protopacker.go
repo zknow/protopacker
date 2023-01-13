@@ -72,15 +72,15 @@ func (bp *ProtoPacker) Unpack(pack []byte) {
 		if length < i+defaultProtoHeaderLength+defaultProtoDataLengthByte {
 			break
 		}
-		if string(pack[i:i+defaultProtoHeaderLength]) == bp.ProtoHeader {
-			msgLen := bytesToInt(pack[i+defaultProtoHeaderLength : i+defaultProtoHeaderLength+defaultProtoDataLengthByte])
-			if length < i+defaultProtoHeaderLength+defaultProtoDataLengthByte+msgLen {
+		if string(pack[i:i+bp.protoHeaderByteLength]) == bp.ProtoHeader {
+			msgLen := bytesToInt(pack[i+bp.protoHeaderByteLength : i+bp.protoHeaderByteLength+defaultProtoDataLengthByte])
+			if length < i+bp.protoHeaderByteLength+defaultProtoDataLengthByte+msgLen {
 				break
 			}
-			data := pack[i+defaultProtoHeaderLength+defaultProtoDataLengthByte : i+defaultProtoHeaderLength+defaultProtoDataLengthByte+msgLen]
+			data := pack[i+bp.protoHeaderByteLength+defaultProtoDataLengthByte : i+bp.protoHeaderByteLength+defaultProtoDataLengthByte+msgLen]
 			bp.riseResult(data)
 
-			i += defaultProtoHeaderLength + defaultProtoDataLengthByte + msgLen - 1
+			i += bp.protoHeaderByteLength + defaultProtoDataLengthByte + msgLen - 1
 		}
 	}
 
